@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-    private Color color = Color.white;
+    public Color color { get; private set; }
     private MeshRenderer Renderer;
     private Material material;
     public int scoreValue = 5;
@@ -29,14 +29,9 @@ public class Block : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter(Collision collision)
+    public void Break()
     {
-        Break();
-    }
-
-    void Break()
-    {
-        LevelManager.Instance.AddScore(scoreValue);
+        GameMenuUI.Instance.AddScore(scoreValue);
         blockCount--;
         if(blockCount <= 0)
         {

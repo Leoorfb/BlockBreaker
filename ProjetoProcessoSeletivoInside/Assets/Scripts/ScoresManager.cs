@@ -36,8 +36,6 @@ public class ScoresManager : MonoBehaviour
         Instance = this;
 
         LoadData();
-
-        SaveData();
         
         DontDestroyOnLoad(gameObject);
 
@@ -85,7 +83,7 @@ public class ScoresManager : MonoBehaviour
         string json = JsonUtility.ToJson(scores);
 
         File.WriteAllText(Application.persistentDataPath + "scoresData.json", json);
-        Debug.Log(File.ReadAllText(Application.persistentDataPath + "scoresData.json"));
+        //Debug.Log(File.ReadAllText(Application.persistentDataPath + "scoresData.json"));
     }
 
     public void LoadData()

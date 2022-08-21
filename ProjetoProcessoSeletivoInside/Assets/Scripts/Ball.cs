@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
+    private AudioSource ballAudio_;
+
+    public ParticleSystem breakParticle;
+
+    public AudioClip[] bounceSounds;
+    public AudioClip[] breakSounds;
+
 
     Vector3 moveDirection = Vector3.up;
     public float speed = 5f;
@@ -24,6 +31,7 @@ public class Ball : MonoBehaviour
     {
         moveDirection = AddRandomDirection(startAngleMin, startAngleMax);
         startPosition = transform.position;
+        ballAudio_ = GetComponent<AudioSource>();
         //rb = GetComponent<Rigidbody>();
     }
 
@@ -32,11 +40,8 @@ public class Ball : MonoBehaviour
     {
         if (LevelManager.Instance.isBuildingLevel  || LevelManager.Instance.isGameOver)
         {
-            transform.position = startPosition;
-            PlayerController.Instance.transform.position = PlayerController.Instance.startPosition;
             return;
         }
-            
 
         if (waitingPlayerInput)
         {
@@ -53,15 +58,51 @@ public class Ball : MonoBehaviour
         }
     }
 
+    public void StartSetup()
+    {
+        moveDirection = Vector3.up;
+        moveDirection = AddRandomDirection(startAngleMin, startAngleMax);
+        transform.position = startPosition;
+        PlayerController.Instance.transform.position = PlayerController.Instance.startPosition;
+        waitingPlayerInput = true;
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         Bounce(collision.contacts[0].normal);
+
+        if (collision.gameObject.CompareTag("Block"))
+        {
+            breakParticle.startColor = collision.gameObject.GetComponent<Block>().color;
+            breakParticle.transform.position = collision.contacts[0].point;
+            breakParticle.Play();
+
+            collision.gameObject.GetComponent<Block>().Break();
+            PlayRandomSound(breakSounds);
+
+            if (Block.blockCount <= 0)
+            {
+                StartSetup();
+            }
+        }
+        else
+        {
+            PlayRandomSound(bounceSounds);
+        }
     }
+
 
     void Bounce(Vector3 flipAxis)
     {
         moveDirection = FlipDirection(flipAxis);
         moveDirection = AddRandomDirection(-bounceAngleRange, bounceAngleRange);
+    }
+
+    void PlayRandomSound(AudioClip[] sounds)
+    {
+        int randomIndex = Random.Range(0, sounds.Length);
+
+        ballAudio_.PlayOneShot(sounds[randomIndex]);
     }
 
     Vector3 FlipDirection(Vector3 flipAxis)
@@ -76,12 +117,10 @@ public class Ball : MonoBehaviour
         
     void outOfScreen()
     {
-        if (LevelManager.Instance.GetLives() > 0)
+        if (LevelManager.Instance.lives > 0)
         {
-            LevelManager.Instance.AddLives(-1);
-            transform.position = startPosition;
-            PlayerController.Instance.transform.position = PlayerController.Instance.startPosition;
-            waitingPlayerInput = true;
+            GameMenuUI.Instance.AddLives(-1);
+            StartSetup();
         }
         else
         {

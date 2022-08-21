@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-using TMPro;
 
 public class LevelManager : MonoBehaviour
 {
@@ -19,22 +17,8 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    [SerializeField]
-    private TextMeshProUGUI playerNameText;
-    [SerializeField]
-    private TextMeshProUGUI scoreText;
-    [SerializeField]
-    private TextMeshProUGUI livesText;
-    [SerializeField]
-    private TextMeshProUGUI levelText;
-    [SerializeField]
-    private TextMeshProUGUI timeText;
-
-    [SerializeField]
-    private GameObject gameOverScreen;
-
-    private int lives = 3;
-    private int level = 1;
+    public int lives = 3;
+    public int level = 1;
 
     public int blockRowSize = 8;
     public int blockColSize = 1;
@@ -88,21 +72,15 @@ public class LevelManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetLives(3);
-        UpdatePlayerName();
-        SetScore(0);
         SetLevel(1);
         StartCoroutine(SpawnBlocks());
     }
 
-    private void Update()
-    {
-        UpdateTime();
-    }
+    
 
     public void GameOver()
     {
-        gameOverScreen.SetActive(true);
+        GameMenuUI.Instance.SetGameOverScreen(true);
         ScoresManager.Instance.SaveNewGameData();
         isGameOver = true;
     }
@@ -132,60 +110,18 @@ public class LevelManager : MonoBehaviour
         isBuildingLevel = false;
     }
 
-    public void UpdateTime()
-    {
-        ScoresManager.Instance.time += Time.deltaTime;
-
-        TimeSpan time = TimeSpan.FromSeconds(ScoresManager.Instance.time);
-
-        timeText.text = "Time: " + time.ToString("hh':'mm':'ss");
-    }
-
-    public void SetScore(int _score)
-    {
-        ScoresManager.Instance.score = _score;
-        scoreText.text = "Score: " + ScoresManager.Instance.score;
-    }
-
-    public void AddScore(int _score)
-    {
-        SetScore(ScoresManager.Instance.score + _score);
-    }
-
-    public int GetLives()
-    {
-        return lives;
-    }
-    public void SetLives(int _lives)
-    {
-        lives = _lives;
-        livesText.text = "Lives: " + lives;
-    }
-
-    public void AddLives(int _lives)
-    {
-        SetLives(lives + _lives);
-    }
-
-    public void SetPlayerName(string _playerName)
-    {
-        ScoresManager.Instance.playerName = _playerName;
-        UpdatePlayerName();
-    }
-    public void UpdatePlayerName()
-    {
-        playerNameText.text = ScoresManager.Instance.playerName;
-    }
+    
+    
 
     public void SetLevel(int _level)
     {
-        Debug.Log("level " + level + " _level" + _level);
+        //Debug.Log("level " + level + " _level" + _level);
         level = _level;
-        levelText.text = "Level: " + level;
+        GameMenuUI.Instance.UpdateLevel();
         levelSpeed = level * levelMultiplier;
         blockColSize = level;
         blockWidth = (colWidth / level) - blockSpacing;
-        Debug.Log("Block Width " + blockWidth);
+        //Debug.Log("Block Width " + blockWidth);
     }
 
     public void NextLevel()
