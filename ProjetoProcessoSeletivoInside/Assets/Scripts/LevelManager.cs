@@ -167,7 +167,7 @@ public class LevelManager : MonoBehaviour
 
     public void NextLevel()
     {
-        //Debug.Log(level++);
+        Debug.Log(level++);
         SetLevel(level++);
         StartCoroutine(SpawnBlocks());
     }
