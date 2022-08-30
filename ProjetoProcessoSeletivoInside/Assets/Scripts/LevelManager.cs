@@ -34,6 +34,11 @@ public class LevelManager : MonoBehaviour
     private GameObject blockPrefab;
     private Vector3 topLeftCorner;
 
+    [SerializeField]
+    private PowerUpEffect[] powerUpsAvaible;
+    [SerializeField]
+    private float powerUpMaxSpawnValue;
+
     float blockHeight;
     float blockWidth;
     float colWidth = 14.5f;
@@ -67,6 +72,8 @@ public class LevelManager : MonoBehaviour
         blockHeight = blockPrefab.transform.localScale.y;
         blockWidth = blockPrefab.transform.localScale.x;
         topLeftCorner = transform.position;
+
+        SetPowerUpMaxSpawnValue();
     }
 
     // Start is called before the first frame update
@@ -77,7 +84,6 @@ public class LevelManager : MonoBehaviour
     }
 
     
-
     public void GameOver()
     {
         GameMenuUI.Instance.SetGameOverScreen(true);
@@ -103,6 +109,9 @@ public class LevelManager : MonoBehaviour
                 GameObject newBlock = Instantiate(blockPrefab, topLeftCornerOffset + position, blockPrefab.transform.rotation);
                 newBlock.transform.SetParent(transform);
                 newBlock.transform.localScale = blockSize;
+
+                SpawnPowerUp(newBlock.GetComponent<Block>(),Random.Range(0f, 100f));
+
                 Block.blockCount++;
                 yield return new WaitForSeconds(.5f/blockColSize);
             }
@@ -110,7 +119,35 @@ public class LevelManager : MonoBehaviour
         isBuildingLevel = false;
     }
 
-    
+    void SpawnPowerUp(Block block ,float spawnValue)
+    {
+        if (spawnValue > powerUpMaxSpawnValue)
+        {
+            return;
+        }
+
+        float powerUpValue = 0;
+
+        foreach (PowerUpEffect PUEffect in powerUpsAvaible)
+        {
+            powerUpValue += PUEffect.spawnChance;
+            if (spawnValue < powerUpValue)
+            {
+                block.powerUpEffect = PUEffect;
+                return;
+            }
+        }
+    }
+
+    void SetPowerUpMaxSpawnValue()
+    {
+        float powerUpValue = 0;
+        foreach (PowerUpEffect PUEffect in powerUpsAvaible)
+        {
+            powerUpValue += PUEffect.spawnChance;
+        }
+        powerUpMaxSpawnValue = powerUpValue;
+    }
     
 
     public void SetLevel(int _level)
@@ -118,7 +155,11 @@ public class LevelManager : MonoBehaviour
         //Debug.Log("level " + level + " _level" + _level);
         level = _level;
         GameMenuUI.Instance.UpdateLevel();
-        levelSpeed = level * levelMultiplier;
+        levelSpeed = level + levelMultiplier;
+
+        PlayerController.Instance.speed = levelSpeed;
+        Ball.speed = levelSpeed;
+
         blockColSize = level;
         blockWidth = (colWidth / level) - blockSpacing;
         //Debug.Log("Block Width " + blockWidth);
@@ -126,7 +167,7 @@ public class LevelManager : MonoBehaviour
 
     public void NextLevel()
     {
-        Debug.Log(level++);
+        //Debug.Log(level++);
         SetLevel(level++);
         StartCoroutine(SpawnBlocks());
     }

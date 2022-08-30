@@ -1375,10 +1375,13 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 86b9579e4381f0b4aa5e4e583d1a159c, type: 3}
   - {fileID: 8300000, guid: 03bb42bc2d415ed44afc6ade833086fc, type: 3}
   - {fileID: 8300000, guid: 334db0d6a1947ed46b04422fce734559, type: 3}
-  speed: 5
   startAngleMin: 30
   startAngleMax: 30
   bounceAngleRange: 15
+  hasExplosivePowerUp: 0
+  blockLayer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!23 &833239614
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2082,6 +2085,14 @@ MonoBehaviour:
   levelSpeed: 0
   levelMultiplier: 5
   blockPrefab: {fileID: 7496184947500329083, guid: cb70618524e9a9b44a4fd5713c92ad38, type: 3}
+  powerUpsAvaible:
+  - {fileID: 11400000, guid: 03f7d96144c634c4495ac13a918a281c, type: 2}
+  - {fileID: 11400000, guid: b88bd926329a89545ae7f9ddf3ecc307, type: 2}
+  - {fileID: 11400000, guid: 9a92edb863f4d9a4789e453f2ab1fa7c, type: 2}
+  - {fileID: 11400000, guid: 8cf8596993a728a45ae6ab462d4abd54, type: 2}
+  - {fileID: 11400000, guid: 5a13195090261f14ebeea4d57b36dcbb, type: 2}
+  - {fileID: 11400000, guid: 5a4e5aebd93422a4a85af575d0e7b568, type: 2}
+  powerUpMaxSpawnValue: 0
   isBuildingLevel: 1
   isGameOver: 0
 --- !u!4 &1187832291

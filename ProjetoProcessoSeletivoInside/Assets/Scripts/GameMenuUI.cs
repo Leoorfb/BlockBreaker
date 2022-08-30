@@ -81,11 +81,14 @@ public class GameMenuUI : MonoBehaviour
 
     public void UpdateTime()
     {
-        ScoresManager.Instance.time += Time.deltaTime;
+        if (!LevelManager.Instance.isGameOver)
+        { 
+            ScoresManager.Instance.time += Time.deltaTime;
 
-        TimeSpan time = TimeSpan.FromSeconds(ScoresManager.Instance.time);
+            TimeSpan time = TimeSpan.FromSeconds(ScoresManager.Instance.time);
 
-        timeText.text = "Time: " + time.ToString("hh':'mm':'ss");
+            timeText.text = "Time: " + time.ToString("hh':'mm':'ss");
+        }
     }
 
     public void SetScore(int _score)

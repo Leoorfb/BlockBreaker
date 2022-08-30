@@ -13,7 +13,7 @@ public class Ball : MonoBehaviour
 
 
     Vector3 moveDirection = Vector3.up;
-    public float speed = 5f;
+    public static float speed = 5f;
 
     public float startAngleMin = 30f; 
     public float startAngleMax = 150f; 
@@ -21,6 +21,10 @@ public class Ball : MonoBehaviour
 
     private float screenLimitY = -4f;
     private Vector3 startPosition;
+
+    public bool hasExplosivePowerUp;
+    [SerializeField]
+    private LayerMask blockLayer;
 
     private bool waitingPlayerInput = true;
     //[SerializeField]
@@ -77,9 +81,13 @@ public class Ball : MonoBehaviour
             breakParticle.transform.position = collision.contacts[0].point;
             breakParticle.Play();
 
-            collision.gameObject.GetComponent<Block>().Break();
+            collision.gameObject.GetComponent<Block>().Break(this);
             PlayRandomSound(breakSounds);
 
+            if (hasExplosivePowerUp)
+            {
+                ExplodeBlock(collision.transform);
+            }
             if (Block.blockCount <= 0)
             {
                 StartSetup();
@@ -91,6 +99,39 @@ public class Ball : MonoBehaviour
         }
     }
 
+    void ExplodeBlock(Transform transform)
+    {
+        Ray ray = new Ray(transform.position, Vector3.up);
+        RaycastHit hit;
+        float distance = transform.lossyScale.y;
+        
+        if (Physics.Raycast(ray, out hit, distance, blockLayer))
+        {
+            hit.collider.GetComponent<Block>().Break(this);
+        }
+
+        ray = new Ray(transform.position, Vector3.down);
+
+        if (Physics.Raycast(ray, out hit, distance, blockLayer))
+        {
+            hit.collider.GetComponent<Block>().Break(this);
+        }
+
+        ray = new Ray(transform.position, Vector3.left);
+        distance = transform.lossyScale.x;
+
+        if (Physics.Raycast(ray, out hit, distance, blockLayer))
+        {
+            hit.collider.GetComponent<Block>().Break(this);
+        }
+
+        ray = new Ray(transform.position, Vector3.right);
+
+        if (Physics.Raycast(ray, out hit, distance, blockLayer))
+        {
+            hit.collider.GetComponent<Block>().Break(this);
+        }
+    }
 
     void Bounce(Vector3 flipAxis)
     {
