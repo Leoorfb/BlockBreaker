@@ -16,14 +16,8 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField]
     private Transform scoreBoardContent;
 
-
     [SerializeField]
     private GameObject scoreBoardItemTemplate;
-
-    private void Start()
-    {
-        
-    }
 
     public void SetPlayerName(string _playerName)
     {
@@ -45,6 +39,7 @@ public class MainMenuUI : MonoBehaviour
 
         StartCoroutine(FillScoreBoard());
     }
+
     public void CloseScoreBoard()
     {
         mainMenuScreen.SetActive(true);

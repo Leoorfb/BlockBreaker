@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class Block : MonoBehaviour
 {
@@ -42,22 +43,21 @@ public class Block : MonoBehaviour
         } 
     }
 
-    //private IEnumerator tPUAnim;
+    IObjectPool<Block> _pool;
+    public void SetPool(IObjectPool<Block> pool) => _pool = pool;
 
     private void Awake()
     {
         powerUpSpriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
         Renderer = GetComponent<MeshRenderer>();
+        material = Renderer.material;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void RestartBlock(Color _color, int _scoreValue)
     {
-        material = Renderer.material;
-
-        color = LevelManager.Instance.currentRowColor;
-        scoreValue = LevelManager.Instance.currentRowScore;
-
+        color = _color;
+        scoreValue = _scoreValue;
+        Debug.Log(color);
         material.color = color;
     }
 
@@ -74,19 +74,13 @@ public class Block : MonoBehaviour
         {
             powerUpEffect.Apply(ball);
         }
-        Destroy(gameObject);
-    }
 
-    /*
-    IEnumerator temporaryPowerUpAnimation()
-    {
-        while (true)
+        if(_pool != null)
         {
-            yield return new WaitForSeconds(.75f);
-            material.color = Color.white;
-            yield return new WaitForSeconds(.1f);
-            material.color = color;
+            _pool.Release(this);
+        }
+        else { 
+            Destroy(gameObject);
         }
     }
-    */
 }

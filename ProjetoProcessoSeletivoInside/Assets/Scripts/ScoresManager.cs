@@ -5,26 +5,13 @@ using UnityEngine;
 
 public class ScoresManager : MonoBehaviour
 {
-    private static ScoresManager _instance;
-    public static ScoresManager Instance
-    {
-        get
-        {
-            return _instance;
-        }
-        private set
-        {
-            _instance = value;
-        }
-    }
+    public static ScoresManager Instance { get; private set; }
 
     public string playerName;
     public int score;
     public float time;
 
-
     public List<ScoreData> scoreDataList { get; private set; }
-
 
     private void Awake()
     {
@@ -38,7 +25,6 @@ public class ScoresManager : MonoBehaviour
         LoadData();
         
         DontDestroyOnLoad(gameObject);
-
     }
 
     public void SetPlayerName(string playerName_)
@@ -67,7 +53,7 @@ public class ScoresManager : MonoBehaviour
     {
         ScoreData newGameData = new ScoreData();
         newGameData.time = time;
-        newGameData.date = System.DateTime.Now.ToString("MM/dd/yyyy");
+        newGameData.date = System.DateTime.Now.ToString("dd/MM/yyyy");
         newGameData.playerName = playerName;
         newGameData.score = score;
 
@@ -89,27 +75,21 @@ public class ScoresManager : MonoBehaviour
     public void LoadData()
     {
         string path = Application.persistentDataPath + "scoresData.json";
-
+        Debug.Log(Application.persistentDataPath + "scoresData.json");
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
             ScoresData data = JsonUtility.FromJson<ScoresData>(json);
             scoreDataList = data.ScoreDataList;
-            SortScores();
+
+            Debug.Log(scoreDataList);
+
+            
+            //SortScores();
+        }
+        else
+        {
+            scoreDataList = new List<ScoreData>();
         }
     }
-}
-
-[System.Serializable]
-public class ScoreData
-{
-    public string playerName;
-    public int score;
-    public float time;
-    public string date;
-}
-
-public class ScoresData
-{
-    public List<ScoreData> ScoreDataList;
 }

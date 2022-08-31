@@ -26,7 +26,11 @@ public class Ball : MonoBehaviour
     [SerializeField]
     private LayerMask blockLayer;
 
-    private bool waitingPlayerInput = true;
+    private bool isWaitingPlayerInput = true;
+
+    private bool areBlocksSpawning = true;
+    private bool isGameOver = false;
+
     //[SerializeField]
     //private Rigidbody rb;
 
@@ -36,21 +40,25 @@ public class Ball : MonoBehaviour
         moveDirection = AddRandomDirection(startAngleMin, startAngleMax);
         startPosition = transform.position;
         ballAudio_ = GetComponent<AudioSource>();
+
+        LevelManager.Instance.GameOverEvent.AddListener(SetGameIsOver);
+        BlockSpawner.Instance.SpawningBlocksEvent.AddListener(SetBlocksAreSpawning);
+        BlockSpawner.Instance.FinishedSpawningBlockEvent.AddListener(SetBlocksAreNotSpawning);
         //rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
-        if (LevelManager.Instance.isBuildingLevel  || LevelManager.Instance.isGameOver)
+        if (areBlocksSpawning || isGameOver)
         {
             return;
         }
 
-        if (waitingPlayerInput)
+        if (isWaitingPlayerInput)
         {
             if (Input.GetAxisRaw("Horizontal") != 0)
-                waitingPlayerInput = false;
+                isWaitingPlayerInput = false;
             return;
         }
 
@@ -62,13 +70,27 @@ public class Ball : MonoBehaviour
         }
     }
 
+    void SetBlocksAreSpawning()
+    {
+        areBlocksSpawning = true;
+        StartSetup();
+    }
+    void SetBlocksAreNotSpawning()
+    {
+        areBlocksSpawning = false;
+    }
+    void SetGameIsOver()
+    {
+        isGameOver = true;
+    }
+
     public void StartSetup()
     {
         moveDirection = Vector3.up;
         moveDirection = AddRandomDirection(startAngleMin, startAngleMax);
         transform.position = startPosition;
         PlayerController.Instance.transform.position = PlayerController.Instance.startPosition;
-        waitingPlayerInput = true;
+        isWaitingPlayerInput = true;
     }
 
     void OnCollisionEnter(Collision collision)

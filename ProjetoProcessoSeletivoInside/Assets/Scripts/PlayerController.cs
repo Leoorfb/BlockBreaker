@@ -20,6 +20,9 @@ public class PlayerController : MonoBehaviour
     public float speed = 5f;
     public Vector3 startPosition;
 
+    private bool areBlocksSpawning = true;
+    private bool isGameOver = false;
+
     private void Awake()
     {
         if (Instance != null)
@@ -31,12 +34,37 @@ public class PlayerController : MonoBehaviour
         startPosition = transform.position;
     }
 
+    private void Start()
+    {   
+        LevelManager.Instance.GameOverEvent.AddListener(SetGameIsOver);
+        BlockSpawner.Instance.SpawningBlocksEvent.AddListener(SetBlocksAreSpawning);
+        BlockSpawner.Instance.FinishedSpawningBlockEvent.AddListener(SetBlocksAreNotSpawning);
+    }
+    
     private void FixedUpdate()
     {
-        if (LevelManager.Instance.isBuildingLevel || LevelManager.Instance.isGameOver)
+        if (areBlocksSpawning || isGameOver)
             return;
 
         float moveInput = Input.GetAxisRaw("Horizontal");
-        transform.Translate(Vector3.right * speed * moveInput * Time.deltaTime);
+        transform.Translate(Vector3.right * speed * moveInput * Time.fixedDeltaTime);
+    }
+
+    void SetBlocksAreSpawning()
+    {
+        areBlocksSpawning = true;
+        StartSetup();
+    }
+    void SetBlocksAreNotSpawning()
+    {
+        areBlocksSpawning = false;
+    }
+    void SetGameIsOver()
+    {
+        isGameOver = true;
+    }
+    public void StartSetup()
+    {
+        transform.position = startPosition;
     }
 }
