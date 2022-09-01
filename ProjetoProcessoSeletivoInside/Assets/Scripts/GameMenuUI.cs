@@ -31,6 +31,8 @@ public class GameMenuUI : MonoBehaviour
         UpdatePlayerName();
         UpdateScore(0);
 
+        ScoresManager.Instance.time = 0;
+
         UpdateBestScoreScreen();
         ScoresManager.Instance.ScoreChangeEvent.AddListener(UpdateScore);
     }
@@ -101,22 +103,34 @@ public class GameMenuUI : MonoBehaviour
     // Atualiza os campos do melhor player
     public void UpdateBestScoreScreen()
     {
-        UpdateBestPlayerName();
-        UpdateBestScore();
-        UpdateBestTime();
+
+        
+        if (ScoresManager.Instance.scoreDataList.Count > 0)
+        {
+            ScoreData bestScore = ScoresManager.Instance.scoreDataList[0];
+
+            UpdateBestPlayerName(bestScore.playerName);
+            UpdateBestScore(bestScore.score);
+            UpdateBestTime(bestScore.time);
+        }
+        else 
+        {
+            UpdateBestPlayerName("None");
+            UpdateBestScore(0);
+            UpdateBestTime(0);
+        }
     }
     // Atualiza o texto do campo nome do melhor player
-    public void UpdateBestPlayerName()
+    public void UpdateBestPlayerName(string name)
     {
-        bestPlayerNameText.text = ScoresManager.Instance.scoreDataList[0].playerName;
+        bestPlayerNameText.text = name;
     }
     // Atualiza o texto do campo pontuação do melhor player
-    public void UpdateBestScore()
+    public void UpdateBestScore(int score)
     {
-        int _score = ScoresManager.Instance.scoreDataList[0].score;
-        bestScoreText.text = "Score: " + _score;
+        bestScoreText.text = "Score: " + score;
 
-        bestScoreText.fontSize = ScoreFontSize(_score);
+        bestScoreText.fontSize = ScoreFontSize(score);
     }
     // Define o tamanho da fonte do campo de pontuação
     public int ScoreFontSize(int _score)
@@ -137,9 +151,9 @@ public class GameMenuUI : MonoBehaviour
         return fontSize;
     }
     // Atualiza o texto do campo tempo do melhor player
-    public void UpdateBestTime()
+    public void UpdateBestTime(float _time)
     {
-        TimeSpan time = TimeSpan.FromSeconds(ScoresManager.Instance.scoreDataList[0].time);
+        TimeSpan time = TimeSpan.FromSeconds(_time);
 
         bestTimeText.text = "Time: " + time.ToString("hh':'mm':'ss");
     }

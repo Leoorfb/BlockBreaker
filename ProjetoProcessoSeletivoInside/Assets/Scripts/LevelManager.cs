@@ -39,7 +39,7 @@ public class LevelManager : MonoBehaviour
 
     public void GameOverCheck (int livesRemaining)
     {
-        if (livesRemaining < 0)
+        if (livesRemaining <= 0)
         {
             GameOver();
         }
@@ -63,6 +63,6 @@ public class LevelManager : MonoBehaviour
     // Função que avança para a próxima fase
     public void NextLevel()
     {
-        SetLevel(level++);
+        SetLevel(level+1);
     }
 }
