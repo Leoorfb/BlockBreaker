@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 691b6bb404352ed4c84a181b37fbe0b5, type: 3}
   m_Name: SmallSpeedBuff
   m_EditorClassIdentifier: 
-  spawnChance: 2
+  spawnChance: 3
   powerUpIcon: {fileID: 21300000, guid: 98d7f66a224e4bb409b6a160e0b6bfd3, type: 3}
   speedMultiplier: 1.1
   duration: 10
