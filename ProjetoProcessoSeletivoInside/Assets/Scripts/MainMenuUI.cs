@@ -16,10 +16,11 @@ public class MainMenuUI : MonoBehaviour
     // Tela do Score Board
     [SerializeField]
     private GameObject scoreBoardScreen;
+
+    [Header("Score Board Settings")]
     // Conteúdo do Score Board
     [SerializeField]
     private Transform scoreBoardContent;
-
     // Template de Item do Score Board
     [SerializeField]
     private GameObject scoreBoardItemTemplate;

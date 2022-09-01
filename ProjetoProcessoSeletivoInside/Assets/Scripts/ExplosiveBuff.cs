@@ -10,7 +10,9 @@ public class ExplosiveBuff : PowerUpEffect
 
     public override void Apply(Ball ball)
     {
-        ball.hasExplosivePowerUp = true;
+        ball.explosivePowerUps++;
+        ball.explosiveTrail.emitting = true;
+        ball.ballTrail.emitting = (false);
 
         if (coroutine != null)
             ball.StopCoroutine(coroutine);
@@ -23,6 +25,14 @@ public class ExplosiveBuff : PowerUpEffect
     IEnumerator DisableBuff(Ball ball)
     {
         yield return new WaitForSeconds(duration);
-        ball.hasExplosivePowerUp = false;
+        ball.explosivePowerUps--;
+        if (ball.explosivePowerUps <= 0)
+        {
+            ball.explosiveTrail.emitting = (false);
+            if (ball.speedPowerUps <= 0)
+            {
+                ball.ballTrail.emitting = (true);
+            }
+        }
     }
 }

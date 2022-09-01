@@ -16,13 +16,29 @@ public class SpeedBuff : PowerUpEffect
         player.speed *= speedMultiplier;
         Ball.speed *= speedMultiplier;
 
-        player.StartCoroutine(DisableBuff(player));
+        ball.speedPowerUps++;
+        ball.speedTrail.emitting = (true);
+        ball.ballTrail.emitting = (false);
+
+        player.StartCoroutine(DisableBuff(player, ball));
     }
 
     // Corrotina que desativa o Power Up depois de um tempo
-    IEnumerator DisableBuff(PlayerController player)
+    IEnumerator DisableBuff(PlayerController player, Ball ball)
     {
         yield return new WaitForSeconds(duration);
+
+        ball.speedPowerUps--;
+        if (ball.speedPowerUps <= 0)
+        {
+            ball.speedTrail.emitting = (false);
+            if (ball.explosivePowerUps <= 0)
+            {
+                ball.ballTrail.emitting = (true);
+            }
+        }
+        
+
         player.speed /= speedMultiplier;
         Ball.speed /= speedMultiplier;
     }

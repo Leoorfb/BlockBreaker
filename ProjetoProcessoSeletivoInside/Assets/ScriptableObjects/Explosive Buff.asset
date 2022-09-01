@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef9c355ac1a4270439fc3e12f91bb1e3, type: 3}
   m_Name: Explosive Buff
   m_EditorClassIdentifier: 
-  spawnChance: 3
+  spawnChance: 2
   powerUpIcon: {fileID: 21300000, guid: 06d72e3ae4ea8cc43895dd557e68259d, type: 3}
   duration: 10

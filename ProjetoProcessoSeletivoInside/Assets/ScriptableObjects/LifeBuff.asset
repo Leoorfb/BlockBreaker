@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc6d4b7ae24e2a84591578c9f6023bf9, type: 3}
   m_Name: LifeBuff
   m_EditorClassIdentifier: 
-  spawnChance: 0.35
+  spawnChance: 0.3
   powerUpIcon: {fileID: 21300000, guid: 2c5d1ccd362f7f04299d07b55e7b5068, type: 3}
   lifeIncrease: 1

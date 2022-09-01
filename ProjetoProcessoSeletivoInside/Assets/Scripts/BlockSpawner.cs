@@ -137,7 +137,7 @@ public class BlockSpawner : MonoBehaviour
         block.transform.SetParent(transform);
         block.transform.localScale = blockSize;
 
-        SpawnPowerUp(block.GetComponent<Block>(), Random.Range(0f, 100f));
+        SpawnPowerUp(block, Random.Range(0f, 100f));
 
         Block.blockCount++;
     }
@@ -148,17 +148,18 @@ public class BlockSpawner : MonoBehaviour
         if (spawnValue > powerUpMaxSpawnValue)
         {
             block.powerUpEffect = null;
+            //block.name = "Block";
             return;
         }
 
         float powerUpValue = 0;
-
         foreach (PowerUpEffect PUEffect in powerUpsAvaible)
         {
             powerUpValue += PUEffect.spawnChance;
             if (spawnValue < powerUpValue)
             {
                 block.powerUpEffect = PUEffect;
+                //block.name = "Block " + PUEffect.name;
                 return;
             }
         }

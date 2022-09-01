@@ -33,10 +33,12 @@ public class Ball : MonoBehaviour
     // Posição inicial
     private Vector3 startPosition;
 
-    // Tem o Power Up de Explosão?
-    public bool hasExplosivePowerUp;
-    [SerializeField]
-    private LayerMask blockLayer;
+    // Quantos Power Ups tem
+    public int explosivePowerUps = 0;
+    public int speedPowerUps = 0;
+    public TrailRenderer ballTrail;
+    public TrailRenderer explosiveTrail;
+    public TrailRenderer speedTrail;
 
     // Está esperando input do jogador?
     private bool isWaitingPlayerInput = true;
@@ -52,7 +54,7 @@ public class Ball : MonoBehaviour
         StartSetup();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (areBlocksSpawning || isGameOver)
         {
@@ -85,7 +87,7 @@ public class Ball : MonoBehaviour
             breakParticle.Play();
 
             int blockCount;
-            collision.gameObject.GetComponent<Block>().Break(this, hasExplosivePowerUp, out blockCount);
+            collision.gameObject.GetComponent<Block>().Break(this, (explosivePowerUps > 0), out blockCount);
 
             if (blockCount <= 0)
             {

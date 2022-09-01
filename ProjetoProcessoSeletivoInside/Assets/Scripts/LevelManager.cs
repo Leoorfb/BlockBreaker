@@ -63,7 +63,6 @@ public class LevelManager : MonoBehaviour
     // Função que avança para a próxima fase
     public void NextLevel()
     {
-        Debug.Log(level++);
         SetLevel(level++);
     }
 }

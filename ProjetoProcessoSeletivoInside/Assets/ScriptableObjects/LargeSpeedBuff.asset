@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: LargeSpeedBuff
   m_EditorClassIdentifier: 
   spawnChance: 1
-  powerUpIcon: {fileID: 21300000, guid: 98d7f66a224e4bb409b6a160e0b6bfd3, type: 3}
+  powerUpIcon: {fileID: 21300000, guid: f28919be09598b64699131ee17abc310, type: 3}
   speedMultiplier: 1.2
   duration: 15

@@ -17,8 +17,9 @@ public class Block : MonoBehaviour
     public static int blockCount = 0;
 
     // Atributos relacinados ao PowerUp do bloco
-    private bool hasPowerUp = false;
+    public bool hasPowerUp { get; private set; }
     private SpriteRenderer powerUpSpriteRenderer;
+    private Vector3 spriteScale = new Vector3(.7f, .7f, .7f);
     private PowerUpEffect _powerUpEffect;
     public PowerUpEffect powerUpEffect 
     { get 
@@ -28,20 +29,19 @@ public class Block : MonoBehaviour
       set
         {
             _powerUpEffect = value;
-            if (value != null)
+            if (value == null)
+            {
+                hasPowerUp = false;
+                powerUpSpriteRenderer.enabled = false;
+                material.color = color;
+            }
+            else
             {
                 hasPowerUp = true;
                 
                 powerUpSpriteRenderer.enabled = true;
                 powerUpSpriteRenderer.sprite = powerUpEffect.powerUpIcon;
-                Vector3 spriteScale = powerUpSpriteRenderer.transform.localScale;
                 powerUpSpriteRenderer.transform.localScale = new Vector3(spriteScale.x/ transform.localScale.x, spriteScale.y/ transform.localScale.y, 1);
-            }
-            else
-            {
-                hasPowerUp = false;
-                powerUpSpriteRenderer.enabled = false;
-                material.color = color;
             }
         } 
     }
@@ -49,6 +49,8 @@ public class Block : MonoBehaviour
     // Pool na qual o bloco pertence
     private IObjectPool<Block> _pool;
     public void SetPool(IObjectPool<Block> pool) => _pool = pool;
+
+    public bool isBreaking = false;
 
     // LayerMask dos blocos
     public LayerMask blockLayer;
@@ -63,6 +65,7 @@ public class Block : MonoBehaviour
     // Função que define um estado inicial para o bloco (Chamada quando o o bloco é ativado na pool)
     public void RestartBlock(Color _color, int _scoreValue)
     {
+        isBreaking = false;
         color = _color;
         scoreValue = _scoreValue;
         material.color = color;
@@ -76,6 +79,7 @@ public class Block : MonoBehaviour
     }
     public void Break(Ball ball, bool isExplosive)
     {
+        isBreaking = true;
         ScoresManager.Instance.AddScore(scoreValue);
         blockCount--;
 
@@ -109,7 +113,8 @@ public class Block : MonoBehaviour
                 distance = transform.lossyScale.x;
             if (Physics.Raycast(rays[i], out hit, distance, blockLayer))
             {
-                hit.collider.GetComponent<Block>().Break(ball, false);
+                if (!hit.collider.GetComponent<Block>().isBreaking)
+                    hit.collider.GetComponent<Block>().Break(ball, false);
             }
         }
     }
