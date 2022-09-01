@@ -3,66 +3,67 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[System.Serializable]
+public class StartLevelEvent : UnityEvent<int, int, int> { }
+
 public class LevelManager : MonoBehaviour
 {
-    public UnityEvent NextLevelEvent;
+    // Eventos ativados quando começa o jogador passa de fase ou perde o jogo
+    public StartLevelEvent StartLevelEvent;
     public UnityEvent GameOverEvent;
 
-    public static LevelManager Instance { get; private set; }
-
-    public int lives = 3;
-    public int level = 1;
-
-    public int levelSpeed;
+    // Atributos sobre o level
+    public int level = 0;
     public int levelMultiplier = 5;
-
-    [SerializeField]
-    private PowerUpEffect[] powerUpsAvaible;
-    [SerializeField]
-    private float powerUpMaxSpawnValue;
-
-    public bool isBuildingLevel = true;
+    private int _levelSpeed;
+    private int levelSpeed {
+        get { return _levelSpeed; }  
+        set {
+            if (value < 10)
+                _levelSpeed = value;
+            else
+                _levelSpeed = 10 + (value / 10);
+        } }
     
+    // Caso o jogo acabou
     public bool isGameOver = false;
-
-    private void Awake()
-    {
-        if(Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-    }
-
+    
     void Start()
     {
-        level = 0;
+        ScoresManager.Instance.score = 0;
         NextLevel();
+        
+        // Scores Manager
+        GameOverEvent.AddListener(ScoresManager.Instance.SaveNewGameData);
     }
 
+    public void GameOverCheck (int livesRemaining)
+    {
+        if (livesRemaining < 0)
+        {
+            GameOver();
+        }
+    }
+
+    // Função que acaba o jogo
     public void GameOver()
     {
         isGameOver = true;
         GameOverEvent.Invoke();
-        GameMenuUI.Instance.SetGameOverScreen(true);
-        ScoresManager.Instance.SaveNewGameData();
     }
 
+    // Função que define a fase
     public void SetLevel(int _level)
     {
         level = _level;
-        GameMenuUI.Instance.UpdateLevel();
         levelSpeed = level + levelMultiplier;
-
-        PlayerController.Instance.speed = levelSpeed;
-        Ball.speed = levelSpeed;
+        StartLevelEvent.Invoke(level,levelMultiplier,levelSpeed);
     }
 
+    // Função que avança para a próxima fase
     public void NextLevel()
     {
         Debug.Log(level++);
         SetLevel(level++);
-        NextLevelEvent.Invoke();
     }
 }

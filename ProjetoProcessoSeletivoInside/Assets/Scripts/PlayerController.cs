@@ -4,43 +4,28 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private static PlayerController _instance;
-    public static PlayerController Instance
-    {
-        get
-        {
-            return _instance;
-        }
-        private set
-        {
-            _instance = value;
-        }
-    }
+    // Evento ativado quando a quantidade de vidas é alterada
+    public IntEvent LivesChangeEvent;
+    
+    // Quantidade de vidas (talvez mover para outro script)
+    public int lives = 3;
 
+    // Velocidade do jogador
     public float speed = 5f;
-    public Vector3 startPosition;
+    // Posição inicial do jogador
+    private Vector3 startPosition;
 
+    // Os blocos estão sendo criados?
     private bool areBlocksSpawning = true;
+    // O jogo acabou?
     private bool isGameOver = false;
 
     private void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
+        ScoresManager.Instance.player = this;
         startPosition = transform.position;
     }
 
-    private void Start()
-    {   
-        LevelManager.Instance.GameOverEvent.AddListener(SetGameIsOver);
-        BlockSpawner.Instance.SpawningBlocksEvent.AddListener(SetBlocksAreSpawning);
-        BlockSpawner.Instance.FinishedSpawningBlockEvent.AddListener(SetBlocksAreNotSpawning);
-    }
-    
     private void FixedUpdate()
     {
         if (areBlocksSpawning || isGameOver)
@@ -50,19 +35,36 @@ public class PlayerController : MonoBehaviour
         transform.Translate(Vector3.right * speed * moveInput * Time.fixedDeltaTime);
     }
 
-    void SetBlocksAreSpawning()
+    // Funções para definir o valor de areBlocksSpawning e isGameOver (Adionadas a eventos)
+    public void SetBlocksAreSpawning()
     {
         areBlocksSpawning = true;
         StartSetup();
     }
-    void SetBlocksAreNotSpawning()
+    public void SetBlocksAreNotSpawning() => areBlocksSpawning = false;
+    public void SetGameIsOver() => isGameOver = true;
+
+    // Função que causa dano ao player
+    public void damagePlayer()
     {
-        areBlocksSpawning = false;
+        damagePlayer(1);
     }
-    void SetGameIsOver()
+    public void damagePlayer(int damage)
     {
-        isGameOver = true;
+        lives -= damage;
+        LivesChangeEvent.Invoke(lives);
     }
+
+    // Função que define velocidade
+    public void SetSpeed(int level, int levelMultiplier, int levelSpeed)
+    {
+        speed = levelSpeed;
+    }
+    public void SetSpeed(int _speed)
+    {
+        speed = _speed;
+    }
+    // Função que reconfigura o player para a configuração inicial
     public void StartSetup()
     {
         transform.position = startPosition;

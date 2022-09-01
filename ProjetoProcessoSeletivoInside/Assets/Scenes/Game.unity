@@ -152,9 +152,62 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0e3207ac29ce514cb8820ab6a0955de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SpawningBlocksEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 833239613}
+        m_TargetAssemblyTypeName: Ball, Assembly-CSharp
+        m_MethodName: SetBlocksAreSpawning
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1375690961}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: SetBlocksAreSpawning
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  FinishedSpawningBlockEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 833239613}
+        m_TargetAssemblyTypeName: Ball, Assembly-CSharp
+        m_MethodName: SetBlocksAreNotSpawning
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1375690961}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: SetBlocksAreNotSpawning
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _blockPrefab: {fileID: 7496184947500329083, guid: cb70618524e9a9b44a4fd5713c92ad38, type: 3}
   blockRowSize: 8
-  blockColSize: 1
   blockSpacing: 0.1
   rowsColors:
   - {r: 0, g: 1, b: 0.98041606, a: 0}
@@ -165,9 +218,6 @@ MonoBehaviour:
   - {r: 0.6200414, g: 0, b: 1, a: 0}
   - {r: 0, g: 0.06589508, b: 1, a: 0}
   - {r: 0, g: 1, b: 0.98039216, a: 0}
-  currentRowColor: {r: 0, g: 0, b: 0, a: 0}
-  currentRowScore: 5
-  isSpawningBlocks: 0
   powerUpsAvaible:
   - {fileID: 11400000, guid: 5a13195090261f14ebeea4d57b36dcbb, type: 2}
   - {fileID: 11400000, guid: 03f7d96144c634c4495ac13a918a281c, type: 2}
@@ -175,7 +225,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5a4e5aebd93422a4a85af575d0e7b568, type: 2}
   - {fileID: 11400000, guid: b88bd926329a89545ae7f9ddf3ecc307, type: 2}
   - {fileID: 11400000, guid: 8cf8596993a728a45ae6ab462d4abd54, type: 2}
-  powerUpMaxSpawnValue: 0
 --- !u!4 &13343555
 Transform:
   m_ObjectHideFlags: 0
@@ -189,7 +238,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &21044461
 GameObject:
@@ -256,7 +305,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &37569730
 GameObject:
@@ -1276,7 +1325,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &656910054
 GameObject:
@@ -1462,7 +1511,60 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb76f53514ad5c7468137b6797ae5eb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  breakParticle: {fileID: 6935938775923562701}
+  BrokeLastBlockEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1187832290}
+        m_TargetAssemblyTypeName: LevelManager, Assembly-CSharp
+        m_MethodName: NextLevel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  BallLeftTheScreenEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1375690961}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: damagePlayer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 833239613}
+        m_TargetAssemblyTypeName: Ball, Assembly-CSharp
+        m_MethodName: StartSetup
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1375690961}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: StartSetup
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   bounceSounds:
   - {fileID: 8300000, guid: 1437a7eb5d56e8541a5b27763f00b7ee, type: 3}
   - {fileID: 8300000, guid: 0a4b7304bc610484597f70fb98fb453c, type: 3}
@@ -1475,9 +1577,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 86b9579e4381f0b4aa5e4e583d1a159c, type: 3}
   - {fileID: 8300000, guid: 03bb42bc2d415ed44afc6ade833086fc, type: 3}
   - {fileID: 8300000, guid: 334db0d6a1947ed46b04422fce734559, type: 3}
-  startAngleMin: 30
-  startAngleMax: 30
-  bounceAngleRange: 15
+  breakParticle: {fileID: 6935938775923562701}
   hasExplosivePowerUp: 0
   blockLayer:
     serializedVersion: 2
@@ -1545,7 +1645,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &833239617
 Rigidbody:
@@ -2143,7 +2243,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1187832289
 GameObject:
@@ -2174,25 +2274,98 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aeb177bf841c374aa48e28c415a2f63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NextLevelEvent:
+  StartLevelEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1375690961}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: SetSpeed
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 833239613}
+        m_TargetAssemblyTypeName: Ball, Assembly-CSharp
+        m_MethodName: SetSpeed
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 13343554}
+        m_TargetAssemblyTypeName: BlockSpawner, Assembly-CSharp
+        m_MethodName: StartSpawnBlocks
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1695170635}
+        m_TargetAssemblyTypeName: GameMenuUI, Assembly-CSharp
+        m_MethodName: UpdateLevel
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   GameOverEvent:
     m_PersistentCalls:
-      m_Calls: []
-  lives: 3
+      m_Calls:
+      - m_Target: {fileID: 1375690961}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: SetGameIsOver
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 833239613}
+        m_TargetAssemblyTypeName: Ball, Assembly-CSharp
+        m_MethodName: SetGameIsOver
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1695170635}
+        m_TargetAssemblyTypeName: GameMenuUI, Assembly-CSharp
+        m_MethodName: SetGameIsOver
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   level: 1
-  levelSpeed: 0
   levelMultiplier: 5
-  powerUpsAvaible:
-  - {fileID: 11400000, guid: 03f7d96144c634c4495ac13a918a281c, type: 2}
-  - {fileID: 11400000, guid: b88bd926329a89545ae7f9ddf3ecc307, type: 2}
-  - {fileID: 11400000, guid: 9a92edb863f4d9a4789e453f2ab1fa7c, type: 2}
-  - {fileID: 11400000, guid: 8cf8596993a728a45ae6ab462d4abd54, type: 2}
-  - {fileID: 11400000, guid: 5a13195090261f14ebeea4d57b36dcbb, type: 2}
-  - {fileID: 11400000, guid: 5a4e5aebd93422a4a85af575d0e7b568, type: 2}
-  powerUpMaxSpawnValue: 0
-  isBuildingLevel: 1
   isGameOver: 0
 --- !u!4 &1187832291
 Transform:
@@ -2255,8 +2428,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e92f3d80859c8e47955caddcffe341e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LivesChangeEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1695170635}
+        m_TargetAssemblyTypeName: GameMenuUI, Assembly-CSharp
+        m_MethodName: UpdateLives
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1187832290}
+        m_TargetAssemblyTypeName: LevelManager, Assembly-CSharp
+        m_MethodName: GameOverCheck
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  lives: 3
   speed: 5
-  startPosition: {x: 0, y: 0, z: 0}
 --- !u!23 &1375690962
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2314,8 +2514,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1375690959}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.23832, y: -3, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.23832035, y: -2.9999995, z: 0}
   m_LocalScale: {x: 1.7, y: 0.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2611,7 +2811,7 @@ RectTransform:
   - {fileID: 987752903}
   - {fileID: 1583096796}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3510,7 +3710,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6935938775923562700
 PrefabInstance:

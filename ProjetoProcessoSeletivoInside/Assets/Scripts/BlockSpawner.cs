@@ -6,37 +6,43 @@ using UnityEngine.Pool;
 
 public class BlockSpawner : MonoBehaviour
 {
+    // Eventos ativados quando os blocos começam e terminam de ser criados
     public UnityEvent SpawningBlocksEvent;
     public UnityEvent FinishedSpawningBlockEvent;
 
-    public static BlockSpawner Instance { get; private set; }
-
+    // Pool de blocos
     ObjectPool<Block> _pool;
 
+    // Prefab dos blocos
     [SerializeField]
     private GameObject _blockPrefab;
 
-    public int blockRowSize = 8;
-    public int blockColSize = 1;
-    public float blockSpacing = .1f;
-    public Color[] rowsColors;
-    public Color currentRowColor;
-    public int currentRowScore;
-
+    // Atributos relaciondos ao grid de blocos
+    [Header("Block Grid Settings")]
+    [SerializeField]
+    private int blockRowSize = 8;
+    private int blockColSize = 1;
+    [SerializeField]
+    private float blockSpacing = .1f;
+    [SerializeField]
+    private Color[] rowsColors;
+    private Color currentRowColor;
+    private int currentRowScore;
+    private float colWidth = 14.5f;
     private Vector3 topLeftCorner;
 
-    float blockHeight;
-    float blockWidth;
-    float colWidth = 14.5f;
-
-    float blockHalfHeight
+    // Atributos relaciondos aos blocos
+    private float blockHeight;
+    private float blockWidth;
+    
+    private float blockHalfHeight
     {
         get
         {
             return blockHeight / 2;
         }
     }
-    float blockHalfWidth
+    private float blockHalfWidth
     {
         get
         {
@@ -44,21 +50,15 @@ public class BlockSpawner : MonoBehaviour
         }
     }
 
-    public bool isSpawningBlocks;
-
+    public bool isSpawningBlocks { get; private set; }
+    
+    // Power Ups disponíves
+    [Header("Power Ups Settings")]
     [SerializeField]
     private PowerUpEffect[] powerUpsAvaible;
-    [SerializeField]
     private float powerUpMaxSpawnValue;
 
     private void Awake() {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-
         SetPowerUpMaxSpawnValue();
 
         blockHeight = _blockPrefab.transform.localScale.y;
@@ -68,11 +68,7 @@ public class BlockSpawner : MonoBehaviour
         _pool = new ObjectPool<Block>(CreateBlock, OnTakeBlockFromPool, OnReturnBlockToPool);
     }
 
-    void Start()
-    {
-        LevelManager.Instance.NextLevelEvent.AddListener(StartSpawnBlocks);
-    }
-
+    // Função que cria o bloco na pool
     Block CreateBlock()
     {
         var block = Instantiate(_blockPrefab);
@@ -80,28 +76,29 @@ public class BlockSpawner : MonoBehaviour
         return block.GetComponent<Block>();
     }
 
+    // Função que ativa o bloco na pool
     void OnTakeBlockFromPool(Block block)
     {
         block.gameObject.SetActive(true);
         block.RestartBlock(currentRowColor,currentRowScore);
     }
 
+    // Função que desativa o bloco na pool
     void OnReturnBlockToPool(Block block)
     {
         block.gameObject.SetActive(false);
     }
 
-    void StartSpawnBlocks()
+    // Função para chamar corrotina SpawnBlocks (Chamada no NextLevelEvent do LevelManager)
+    public void StartSpawnBlocks(int level, int levelMultiplier, int levelSpeed)
     {
-        StartCoroutine(SpawnBlocks());
+        StartCoroutine(SpawnBlocks(level,levelMultiplier));
     }
 
-    IEnumerator SpawnBlocks()
+    // Corrotina que cria a grid de blocos
+    IEnumerator SpawnBlocks(int level, int levelMultiplier)
     {
         SpawningBlocksEvent.Invoke();
-
-        int level = LevelManager.Instance.level;
-        int levelMultiplier = LevelManager.Instance.levelMultiplier;
 
         blockColSize = level;
         blockWidth = (colWidth / level) - blockSpacing;
@@ -119,17 +116,10 @@ public class BlockSpawner : MonoBehaviour
             currentRowScore = (blockRowSize - y + 1) * levelMultiplier * level;
             for (int x = 1; x <= blockColSize; x++)
             {
-                var block = _pool.Get();
+                position = topLeftCornerOffset + new Vector3((x * (blockSpacing + blockWidth)), (-y * (blockSpacing + blockHeight)), 0);
 
-                position = new Vector3((x * (blockSpacing + blockWidth)), (-y * (blockSpacing + blockHeight)), 0);
-                
-                block.transform.position = topLeftCornerOffset + position;
-                block.transform.SetParent(transform);
-                block.transform.localScale = blockSize;
+                SpawnBlock(position, blockSize);
 
-                SpawnPowerUp(block.GetComponent<Block>(), Random.Range(0f, 100f));
-
-                Block.blockCount++;
                 yield return new WaitForSeconds(.5f / blockColSize);
             }
         }
@@ -138,6 +128,21 @@ public class BlockSpawner : MonoBehaviour
         FinishedSpawningBlockEvent.Invoke();
     }
 
+    // Função que cria o bloco
+    void SpawnBlock(Vector3 position, Vector3 blockSize)
+    {
+        var block = _pool.Get();
+
+        block.transform.position = position;
+        block.transform.SetParent(transform);
+        block.transform.localScale = blockSize;
+
+        SpawnPowerUp(block.GetComponent<Block>(), Random.Range(0f, 100f));
+
+        Block.blockCount++;
+    }
+
+    // Função que define o Power Up do bloco
     void SpawnPowerUp(Block block, float spawnValue)
     {
         if (spawnValue > powerUpMaxSpawnValue)
@@ -159,6 +164,7 @@ public class BlockSpawner : MonoBehaviour
         }
     }
 
+    // Função que calcula a chance de um bloco ter um Power Up
     void SetPowerUpMaxSpawnValue()
     {
         float powerUpValue = 0;

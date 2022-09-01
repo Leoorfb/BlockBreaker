@@ -9,26 +9,32 @@ using System;
 
 public class MainMenuUI : MonoBehaviour
 {
+    [Header("Screens Settings")]
+    // Tela do Menu
     [SerializeField]
     private GameObject mainMenuScreen;
+    // Tela do Score Board
     [SerializeField]
     private GameObject scoreBoardScreen;
+    // Conteúdo do Score Board
     [SerializeField]
     private Transform scoreBoardContent;
 
+    // Template de Item do Score Board
     [SerializeField]
     private GameObject scoreBoardItemTemplate;
 
+    // Define o Nome do Player
     public void SetPlayerName(string _playerName)
     {
         ScoresManager.Instance.playerName = _playerName;
     }
-
+    // Começa o jogo
     public void StartGame()
     {
         SceneManager.LoadScene(1);
     }
-
+    // Abre o Score Board
     public void OpenScoreBoard()
     {
         scoreBoardScreen.SetActive(true);
@@ -39,17 +45,15 @@ public class MainMenuUI : MonoBehaviour
 
         StartCoroutine(FillScoreBoard());
     }
-
+    // Fecha o Score Board
     public void CloseScoreBoard()
     {
         mainMenuScreen.SetActive(true);
         scoreBoardScreen.SetActive(false);
     }
-
+    // Fecha o jogo
     public void ExitGame()
     {
-        //ScoresManager.Instance.SaveData();
-        //ScoreManager.Instance.SaveColor();
 #if UNITY_EDITOR
         EditorApplication.ExitPlaymode();
 #else
@@ -57,6 +61,7 @@ public class MainMenuUI : MonoBehaviour
 #endif
     }
 
+    // Preenche o ScoreBoard
     IEnumerator FillScoreBoard()
     {
         List<ScoreData> scoresDatas = ScoresManager.Instance.scoreDataList;
@@ -66,7 +71,7 @@ public class MainMenuUI : MonoBehaviour
             yield return new WaitForSeconds(.05f);
         }
     }
-
+    // Cria Item do ScoreBoard
     private void CreateScoreBoardItem(ScoreData scoreData, Transform container, int index)
     {
         Transform itemTransform = Instantiate(scoreBoardItemTemplate, container).transform;
@@ -74,9 +79,6 @@ public class MainMenuUI : MonoBehaviour
         //itemRectTransform.anchoredPosition = new Vector2(0, -(index * 100));
         containerRectTransform.sizeDelta = new Vector2(containerRectTransform.sizeDelta.x, (index+1) * 100);
         itemTransform.position = new Vector3(itemTransform.position.x, containerRectTransform.Find("ContentTopBorder").transform.position.y - (index * 100), itemTransform.position.z);
-        
-        Debug.Log(containerRectTransform.Find("ContentTopBorder").transform.position.y);
-        Debug.Log("#" + (index + 1) + " index: " + index + "position " + itemTransform.position);
         
         itemTransform.Find("RankText").GetComponent<TextMeshProUGUI>().text = "#" + (index + 1);
         itemTransform.Find("PlayerNameText").GetComponent<TextMeshProUGUI>().text = scoreData.playerName;
@@ -87,6 +89,4 @@ public class MainMenuUI : MonoBehaviour
         itemTransform.Find("TimeText").GetComponent<TextMeshProUGUI>().text = time.ToString("hh':'mm':'ss");
         itemTransform.Find("DateText").GetComponent<TextMeshProUGUI>().text = scoreData.date;
     }
-
-
 }

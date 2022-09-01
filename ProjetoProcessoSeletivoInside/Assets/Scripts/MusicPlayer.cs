@@ -3,25 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MusicPlayer : MonoBehaviour
-{
-    private AudioSource musicAudio_;
-
+{   
+    [Header("Playlist Settings")]
     public AudioClip[] musicPlaylist;
+    private AudioSource musicAudio_;
 
     private int playlistIndex;
 
-    private static MusicPlayer _instance;
-    public static MusicPlayer Instance
-    {
-        get
-        {
-            return _instance;
-        }
-        private set
-        {
-            _instance = value;
-        }
-    }
+    // Singleton
+    public static MusicPlayer Instance { get; private set; }
 
     private void Awake()
     {

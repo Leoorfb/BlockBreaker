@@ -4,6 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "PowerUps/ExplosiveBuff")]
 public class ExplosiveBuff : PowerUpEffect
 {
+    [Header("ExplosiveBuff Settings")]
     public float duration;
     IEnumerator coroutine;
 
@@ -18,6 +19,7 @@ public class ExplosiveBuff : PowerUpEffect
         ball.StartCoroutine(coroutine);
     }
 
+    // Corrotina que desativa o Power Up depois de um tempo
     IEnumerator DisableBuff(Ball ball)
     {
         yield return new WaitForSeconds(duration);

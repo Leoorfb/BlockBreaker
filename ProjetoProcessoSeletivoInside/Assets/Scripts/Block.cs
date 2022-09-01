@@ -5,17 +5,20 @@ using UnityEngine.Pool;
 
 public class Block : MonoBehaviour
 {
+    // Atributos relacinados a cor do bloco
     public Color color { get; private set; }
     private MeshRenderer Renderer;
     private Material material;
-    public int scoreValue = 5;
 
+    // Quantos pontos o bloco vale
+    private int scoreValue = 5;
+
+    // Quantidade de blocos na tela
     public static int blockCount = 0;
 
-    public bool hasPowerUp = false;
-
+    // Atributos relacinados ao PowerUp do bloco
+    private bool hasPowerUp = false;
     private SpriteRenderer powerUpSpriteRenderer;
-
     private PowerUpEffect _powerUpEffect;
     public PowerUpEffect powerUpEffect 
     { get 
@@ -43,8 +46,12 @@ public class Block : MonoBehaviour
         } 
     }
 
-    IObjectPool<Block> _pool;
+    // Pool na qual o bloco pertence
+    private IObjectPool<Block> _pool;
     public void SetPool(IObjectPool<Block> pool) => _pool = pool;
+
+    // LayerMask dos blocos
+    public LayerMask blockLayer;
 
     private void Awake()
     {
@@ -53,34 +60,57 @@ public class Block : MonoBehaviour
         material = Renderer.material;
     }
 
+    // Função que define um estado inicial para o bloco (Chamada quando o o bloco é ativado na pool)
     public void RestartBlock(Color _color, int _scoreValue)
     {
         color = _color;
         scoreValue = _scoreValue;
-        Debug.Log(color);
         material.color = color;
     }
 
-    public void Break(Ball ball)
+    // Função que quebra o bloco, ativando o power up, caso ele tenha um, e desativando ele na pool caso ele pertença a uma ou destruindo ele caso contrário
+    public void Break(Ball ball, bool isExplosive, out int _blockCount)
     {
-        GameMenuUI.Instance.AddScore(scoreValue);
+        Break(ball, isExplosive);
+        _blockCount = blockCount;
+    }
+    public void Break(Ball ball, bool isExplosive)
+    {
+        ScoresManager.Instance.AddScore(scoreValue);
         blockCount--;
-        if(blockCount <= 0)
-        {
-            LevelManager.Instance.NextLevel();
-        }
 
         if (hasPowerUp)
-        {
             powerUpEffect.Apply(ball);
-        }
 
-        if(_pool != null)
-        {
+        if (isExplosive)
+            Explode(ball);
+
+        if (_pool != null)
             _pool.Release(this);
-        }
-        else { 
+        else
             Destroy(gameObject);
+    }
+
+    // Função que explode os blocos próximos ao acertado
+    void Explode(Ball ball)
+    {
+        Ray[] rays = {
+            new Ray(transform.position, Vector3.up),
+            new Ray(transform.position, Vector3.down),
+            new Ray(transform.position, Vector3.left),
+            new Ray(transform.position, Vector3.right)
+        };
+        RaycastHit hit;
+
+        float distance = transform.lossyScale.y;
+        for (int i = 0; i < rays.Length; i++)
+        {
+            if (i >= 2)
+                distance = transform.lossyScale.x;
+            if (Physics.Raycast(rays[i], out hit, distance, blockLayer))
+            {
+                hit.collider.GetComponent<Block>().Break(ball, false);
+            }
         }
     }
 }

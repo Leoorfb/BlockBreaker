@@ -5,12 +5,13 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "PowerUps/SpeedBuff")]
 public class SpeedBuff : PowerUpEffect
 {
+    [Header("SpeedBuff Settings")]
     public float speedMultiplier;
     public float duration;
 
     public override void Apply(Ball ball)
     {
-        PlayerController player = PlayerController.Instance;
+        PlayerController player = ScoresManager.Instance.player;
 
         player.speed *= speedMultiplier;
         Ball.speed *= speedMultiplier;
@@ -18,6 +19,7 @@ public class SpeedBuff : PowerUpEffect
         player.StartCoroutine(DisableBuff(player));
     }
 
+    // Corrotina que desativa o Power Up depois de um tempo
     IEnumerator DisableBuff(PlayerController player)
     {
         yield return new WaitForSeconds(duration);

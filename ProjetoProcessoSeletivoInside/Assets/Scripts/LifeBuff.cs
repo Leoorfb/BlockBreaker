@@ -4,9 +4,10 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "PowerUps/LifeBuff")]
 public class LifeBuff : PowerUpEffect
 {
+    [Header("LifeBuff Settings")]
     public int lifeIncrease;
     public override void Apply(Ball ball)
     {
-        GameMenuUI.Instance.AddLives(+lifeIncrease);
+        ScoresManager.Instance.player.damagePlayer(-lifeIncrease);
     }
 }

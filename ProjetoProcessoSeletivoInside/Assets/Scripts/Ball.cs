@@ -1,60 +1,63 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Ball : MonoBehaviour
 {
-    private AudioSource ballAudio_;
+    // Evento chamado quando o ultimo bloco é quebrado
+    public UnityEvent BrokeLastBlockEvent;
+    // Evento chamado quando a bola sai da tela
+    public UnityEvent BallLeftTheScreenEvent;
 
-    public ParticleSystem breakParticle;
-
+    // Efeitos sonórios
+    [Header("SFX Settings")]
     public AudioClip[] bounceSounds;
     public AudioClip[] breakSounds;
+    private AudioSource ballAudio_;
+    
+    // Partícula de quando quebra um bloco
+    public ParticleSystem breakParticle;
 
-
-    Vector3 moveDirection = Vector3.up;
+    // Direção de Movimento
+    private Vector3 moveDirection = Vector3.up;
+    // Velocidade de Movimento
     public static float speed = 5f;
 
-    public float startAngleMin = 30f; 
-    public float startAngleMax = 150f; 
-    public float bounceAngleRange = 15f;
+    // Angulo de Inicio
+    private float startAngleRange = 35f;
 
+    // Limite da tela vertical
     private float screenLimitY = -4f;
+    
+    // Posição inicial
     private Vector3 startPosition;
 
+    // Tem o Power Up de Explosão?
     public bool hasExplosivePowerUp;
     [SerializeField]
     private LayerMask blockLayer;
 
+    // Está esperando input do jogador?
     private bool isWaitingPlayerInput = true;
-
+    // Os blocos estão sendo criados?
     private bool areBlocksSpawning = true;
+    // O jogo acabou?
     private bool isGameOver = false;
 
-    //[SerializeField]
-    //private Rigidbody rb;
-
-    // Start is called before the first frame update
     void Start()
     {
-        moveDirection = AddRandomDirection(startAngleMin, startAngleMax);
-        startPosition = transform.position;
         ballAudio_ = GetComponent<AudioSource>();
-
-        LevelManager.Instance.GameOverEvent.AddListener(SetGameIsOver);
-        BlockSpawner.Instance.SpawningBlocksEvent.AddListener(SetBlocksAreSpawning);
-        BlockSpawner.Instance.FinishedSpawningBlockEvent.AddListener(SetBlocksAreNotSpawning);
-        //rb = GetComponent<Rigidbody>();
+        startPosition = transform.position;
+        StartSetup();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (areBlocksSpawning || isGameOver)
         {
             return;
         }
-
         if (isWaitingPlayerInput)
         {
             if (Input.GetAxisRaw("Horizontal") != 0)
@@ -70,50 +73,26 @@ public class Ball : MonoBehaviour
         }
     }
 
-    void SetBlocksAreSpawning()
-    {
-        areBlocksSpawning = true;
-        StartSetup();
-    }
-    void SetBlocksAreNotSpawning()
-    {
-        areBlocksSpawning = false;
-    }
-    void SetGameIsOver()
-    {
-        isGameOver = true;
-    }
-
-    public void StartSetup()
-    {
-        moveDirection = Vector3.up;
-        moveDirection = AddRandomDirection(startAngleMin, startAngleMax);
-        transform.position = startPosition;
-        PlayerController.Instance.transform.position = PlayerController.Instance.startPosition;
-        isWaitingPlayerInput = true;
-    }
-
     void OnCollisionEnter(Collision collision)
     {
         Bounce(collision.contacts[0].normal);
 
         if (collision.gameObject.CompareTag("Block"))
         {
-            breakParticle.startColor = collision.gameObject.GetComponent<Block>().color;
+            var main = breakParticle.main;
+            main.startColor = collision.gameObject.GetComponent<Block>().color;
             breakParticle.transform.position = collision.contacts[0].point;
             breakParticle.Play();
 
-            collision.gameObject.GetComponent<Block>().Break(this);
-            PlayRandomSound(breakSounds);
+            int blockCount;
+            collision.gameObject.GetComponent<Block>().Break(this, hasExplosivePowerUp, out blockCount);
 
-            if (hasExplosivePowerUp)
+            if (blockCount <= 0)
             {
-                ExplodeBlock(collision.transform);
+                BrokeLastBlockEvent.Invoke();
             }
-            if (Block.blockCount <= 0)
-            {
-                StartSetup();
-            }
+
+            PlayRandomSound(breakSounds);
         }
         else
         {
@@ -121,73 +100,57 @@ public class Ball : MonoBehaviour
         }
     }
 
-    void ExplodeBlock(Transform transform)
+    // Funções para definir o valor de areBlocksSpawning e isGameOver (Adionadas a eventos)
+    public void SetBlocksAreSpawning()
     {
-        Ray ray = new Ray(transform.position, Vector3.up);
-        RaycastHit hit;
-        float distance = transform.lossyScale.y;
-        
-        if (Physics.Raycast(ray, out hit, distance, blockLayer))
-        {
-            hit.collider.GetComponent<Block>().Break(this);
-        }
+        areBlocksSpawning = true;
+        StartSetup();
+    }
+    public void SetBlocksAreNotSpawning() => areBlocksSpawning = false;
+    public void SetGameIsOver() => isGameOver = true;
 
-        ray = new Ray(transform.position, Vector3.down);
-
-        if (Physics.Raycast(ray, out hit, distance, blockLayer))
-        {
-            hit.collider.GetComponent<Block>().Break(this);
-        }
-
-        ray = new Ray(transform.position, Vector3.left);
-        distance = transform.lossyScale.x;
-
-        if (Physics.Raycast(ray, out hit, distance, blockLayer))
-        {
-            hit.collider.GetComponent<Block>().Break(this);
-        }
-
-        ray = new Ray(transform.position, Vector3.right);
-
-        if (Physics.Raycast(ray, out hit, distance, blockLayer))
-        {
-            hit.collider.GetComponent<Block>().Break(this);
-        }
+    // Função que define velocidade
+    public void SetSpeed(int level, int levelMultiplier, int levelSpeed)
+    {
+        speed = levelSpeed;
+    }
+    public void SetSpeed(int _speed)
+    {
+        speed = _speed;
     }
 
+    // Função que reconfigura a bola para a configuração inicial
+    public void StartSetup()
+    {
+        moveDirection = Vector3.up;
+        moveDirection = AddRandomDirection(startAngleRange);
+        transform.position = startPosition;
+        isWaitingPlayerInput = true;
+    }
+
+    // Função que vira a direção de movimento
     void Bounce(Vector3 flipAxis)
     {
-        moveDirection = FlipDirection(flipAxis);
-        moveDirection = AddRandomDirection(-bounceAngleRange, bounceAngleRange);
+        moveDirection = Vector3.Reflect(moveDirection, flipAxis);
     }
 
+    // Toca um som de uma array de sons
     void PlayRandomSound(AudioClip[] sounds)
     {
         int randomIndex = Random.Range(0, sounds.Length);
-
         ballAudio_.PlayOneShot(sounds[randomIndex]);
     }
 
-    Vector3 FlipDirection(Vector3 flipAxis)
+    // Função que adiciona um angulo aleatória a direção de movimento
+    Vector3 AddRandomDirection(float angleRange)
     {
-        return  Vector3.Reflect(moveDirection, flipAxis);
-    }
-    Vector3 AddRandomDirection(float minAngle, float maxAngle)
-    {
-        Quaternion randomAngle = Quaternion.AngleAxis(Random.Range(minAngle, maxAngle), Vector3.forward);
+        Quaternion randomAngle = Quaternion.AngleAxis(Random.Range(-angleRange, angleRange), Vector3.forward);
         return randomAngle * moveDirection;
     }
-        
+    
+    // Função para quando a Bola sai da tela
     void outOfScreen()
     {
-        if (LevelManager.Instance.lives > 0)
-        {
-            GameMenuUI.Instance.AddLives(-1);
-            StartSetup();
-        }
-        else
-        {
-            LevelManager.Instance.GameOver();
-        }
+        BallLeftTheScreenEvent.Invoke();
     }
 }

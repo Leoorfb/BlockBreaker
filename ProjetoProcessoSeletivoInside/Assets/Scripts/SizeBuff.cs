@@ -5,8 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "PowerUps/SizeBuff")]
 public class SizeBuff : PowerUpEffect
 {
-    public float sizeMultiplier;
-    public float duration;
+    [Header("SizeBuff Settings")]
+    [SerializeField]
+    private float sizeMultiplier;
+    [SerializeField]
+    private float duration;
 
     Vector3 sizeMult;
     Vector3 sizeDiv;
@@ -19,13 +22,14 @@ public class SizeBuff : PowerUpEffect
 
     public override void Apply(Ball ball)
     {
-        PlayerController player = PlayerController.Instance;
+        PlayerController player = ScoresManager.Instance.player;
 
         player.transform.localScale = Vector3.Scale(player.transform.localScale, sizeMult);
 
         player.StartCoroutine(DisableBuff(player));
     }
 
+    // Corrotina que desativa o Power Up depois de um tempo
     IEnumerator DisableBuff(PlayerController player)
     {
         yield return new WaitForSeconds(duration);

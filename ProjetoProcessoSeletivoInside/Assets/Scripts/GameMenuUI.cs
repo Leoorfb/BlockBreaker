@@ -7,57 +7,32 @@ using System;
 
 public class GameMenuUI : MonoBehaviour
 {
-    private static GameMenuUI _instance;
-    public static GameMenuUI Instance
-    {
-        get
-        {
-            return _instance;
-        }
-        private set
-        {
-            _instance = value;
-        }
-    }
+    [Header("Player UI Settings")]
+    [SerializeField] private TextMeshProUGUI playerNameText;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI livesText;
+    [SerializeField] private TextMeshProUGUI levelText;
+    [SerializeField] private TextMeshProUGUI timeText;
 
-    [SerializeField]
-    private TextMeshProUGUI playerNameText;
-    [SerializeField]
-    private TextMeshProUGUI scoreText;
-    [SerializeField]
-    private TextMeshProUGUI livesText;
-    [SerializeField]
-    private TextMeshProUGUI levelText;
-    [SerializeField]
-    private TextMeshProUGUI timeText;
+    [Header("Best Player UI Settings")]
+    [SerializeField] private TextMeshProUGUI bestPlayerNameText;
+    [SerializeField] private TextMeshProUGUI bestScoreText;
+    [SerializeField] private TextMeshProUGUI bestTimeText;
 
-    [SerializeField]
-    private TextMeshProUGUI bestPlayerNameText;
-    [SerializeField]
-    private TextMeshProUGUI bestScoreText;
-    [SerializeField]
-    private TextMeshProUGUI bestTimeText;
+    [Header("Screens Settings")]
+    [SerializeField] private GameObject gameOverScreen;
 
-    [SerializeField]
-    private GameObject gameOverScreen;
-
-    private void Awake()
-    {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-    }
+    // O jogo acabou?
+    private bool isGameOver = false;
 
     private void Start()
     {
-        SetLives(3);
+        UpdateLives(ScoresManager.Instance.player.lives);
         UpdatePlayerName();
-        SetScore(0);
+        UpdateScore(0);
 
         UpdateBestScoreScreen();
+        ScoresManager.Instance.ScoreChangeEvent.AddListener(UpdateScore);
     }
 
     private void Update()
@@ -65,23 +40,32 @@ public class GameMenuUI : MonoBehaviour
         UpdateTime();
     }
 
+    // Função para definir o valor de isGameOver (Adionada a evento)
+    public void SetGameIsOver()
+    {
+        isGameOver = true;
+        SetGameOverScreen();
+    }
+    // Reinicia o jogo
     public void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+    // Volta para o Menu Inicial
     public void MainMenu()
     {
         SceneManager.LoadScene(0);
     }
-
-    public void SetGameOverScreen(bool active)
+    // Ativa a tela de game over
+    public void SetGameOverScreen()
     {
-        gameOverScreen.SetActive(active);
+        gameOverScreen.SetActive(isGameOver);
     }
-
+    
+    // Atualiza o tempo de partida
     public void UpdateTime()
     {
-        if (!LevelManager.Instance.isGameOver)
+        if (!isGameOver)
         { 
             ScoresManager.Instance.time += Time.deltaTime;
 
@@ -91,57 +75,42 @@ public class GameMenuUI : MonoBehaviour
         }
     }
 
-    public void SetScore(int _score)
+    // Define quantos pontos o player atual tem
+    public void UpdateScore(int _score)
     {
-        ScoresManager.Instance.score = _score;
-        scoreText.text = "Score: " + ScoresManager.Instance.score;
+        scoreText.text = "Score: " + _score;
         scoreText.fontSize = ScoreFontSize(_score);
     }
 
-    public void AddScore(int _score)
+    // Atualiza o texto do campo vidas do player atual
+    public void UpdateLives(int _lives)
     {
-        SetScore(ScoresManager.Instance.score + _score);
+        livesText.text = "Lives: " + _lives;
     }
-
-    public void SetLives(int _lives)
-    {
-        LevelManager.Instance.lives = _lives;
-        livesText.text = "Lives: " + LevelManager.Instance.lives;
-    }
-
-    public void AddLives(int _lives)
-    {
-        SetLives(LevelManager.Instance.lives + _lives);
-    }
-
-    public void SetPlayerName(string _playerName)
-    {
-        ScoresManager.Instance.playerName = _playerName;
-        UpdatePlayerName();
-    }
-
+    // Atualiza o texto do campo nome do player atual
     public void UpdatePlayerName()
     {
         playerNameText.text = ScoresManager.Instance.playerName;
     }
-
-    public void UpdateLevel()
+    // Atualiza o texto do campo fase atual
+    public void UpdateLevel(int level, int levelMultiplier, int levelSpeed)
     {
-        levelText.text = "Level: " + LevelManager.Instance.level;
+        levelText.text = "Level: " + level;
     }
 
+    // Atualiza os campos do melhor player
     public void UpdateBestScoreScreen()
     {
         UpdateBestPlayerName();
         UpdateBestScore();
         UpdateBestTime();
     }
-
+    // Atualiza o texto do campo nome do melhor player
     public void UpdateBestPlayerName()
     {
         bestPlayerNameText.text = ScoresManager.Instance.scoreDataList[0].playerName;
     }
-
+    // Atualiza o texto do campo pontuação do melhor player
     public void UpdateBestScore()
     {
         int _score = ScoresManager.Instance.scoreDataList[0].score;
@@ -149,7 +118,7 @@ public class GameMenuUI : MonoBehaviour
 
         bestScoreText.fontSize = ScoreFontSize(_score);
     }
-
+    // Define o tamanho da fonte do campo de pontuação
     public int ScoreFontSize(int _score)
     {
         int fontSize = 48;
@@ -167,8 +136,8 @@ public class GameMenuUI : MonoBehaviour
         }
         return fontSize;
     }
-
-        public void UpdateBestTime()
+    // Atualiza o texto do campo tempo do melhor player
+    public void UpdateBestTime()
     {
         TimeSpan time = TimeSpan.FromSeconds(ScoresManager.Instance.scoreDataList[0].time);
 
