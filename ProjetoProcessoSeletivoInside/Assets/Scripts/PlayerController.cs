@@ -6,7 +6,9 @@ public class PlayerController : MonoBehaviour
 {
     // Evento ativado quando a quantidade de vidas é alterada
     public IntEvent LivesChangeEvent;
-    
+    // Evento ativado quando certos powerUps são usados
+    public PowerUpEvent PlayerUsedPowerUp;
+
     // Quantidade de vidas (talvez mover para outro script)
     public int lives = 3;
 
@@ -20,10 +22,19 @@ public class PlayerController : MonoBehaviour
     // O jogo acabou?
     private bool isGameOver = false;
 
+    private float currentHalfWidth { get { return transform.localScale.x / 2; } }
+
+    [SerializeField]
+    LayerMask borderMask;
+
     private void Awake()
     {
-        ScoresManager.Instance.player = this;
         startPosition = transform.position;
+    }
+
+    private void Start()
+    {
+        ScoresManager.Instance.player = this;
     }
 
     private void FixedUpdate()
@@ -32,7 +43,17 @@ public class PlayerController : MonoBehaviour
             return;
 
         float moveInput = Input.GetAxisRaw("Horizontal");
-        transform.Translate(Vector3.right * speed * moveInput * Time.fixedDeltaTime);
+
+        Vector3 direction = Vector3.right * moveInput;
+        float distance = speed  * Time.fixedDeltaTime;
+        Vector3 movement = direction * distance;
+
+        Ray ray = new Ray(transform.position, direction);
+
+        if (!Physics.Raycast(ray, distance + currentHalfWidth, borderMask))
+        {
+            transform.Translate(movement);
+        }
     }
 
     // Funções para definir o valor de areBlocksSpawning e isGameOver (Adionadas a eventos)

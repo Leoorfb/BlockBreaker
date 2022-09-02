@@ -27,6 +27,8 @@ public class SizeBuff : PowerUpEffect
         player.transform.localScale = Vector3.Scale(player.transform.localScale, sizeMult);
 
         player.StartCoroutine(DisableBuff(player));
+
+        player.PlayerUsedPowerUp.Invoke(powerUpIcon.texture, duration);
     }
 
     // Corrotina que desativa o Power Up depois de um tempo

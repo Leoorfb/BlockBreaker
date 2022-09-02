@@ -19,6 +19,8 @@ public class ExplosiveBuff : PowerUpEffect
 
         coroutine = DisableBuff(ball);
         ball.StartCoroutine(coroutine);
+
+        ScoresManager.Instance.player.PlayerUsedPowerUp.Invoke(powerUpIcon.texture, duration);
     }
 
     // Corrotina que desativa o Power Up depois de um tempo

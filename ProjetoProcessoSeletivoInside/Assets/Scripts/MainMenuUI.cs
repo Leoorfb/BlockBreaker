@@ -77,9 +77,9 @@ public class MainMenuUI : MonoBehaviour
     {
         Transform itemTransform = Instantiate(scoreBoardItemTemplate, container).transform;
         RectTransform containerRectTransform = container.GetComponent<RectTransform>();
-        //itemRectTransform.anchoredPosition = new Vector2(0, -(index * 100));
         containerRectTransform.sizeDelta = new Vector2(containerRectTransform.sizeDelta.x, (index+1) * 100);
-        itemTransform.position = new Vector3(itemTransform.position.x, containerRectTransform.Find("ContentTopBorder").transform.position.y - (index * 100), itemTransform.position.z);
+        //itemTransform.position = new Vector3(itemTransform.position.x, containerRectTransform.Find("ContentTopBorder").transform.position.y - (index * 100), itemTransform.position.z);
+        itemTransform.localPosition = new Vector3(itemTransform.localPosition.x, (index * -100), 0);
         
         itemTransform.Find("RankText").GetComponent<TextMeshProUGUI>().text = "#" + (index + 1);
         itemTransform.Find("PlayerNameText").GetComponent<TextMeshProUGUI>().text = scoreData.playerName;
